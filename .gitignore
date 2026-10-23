@@ -1,0 +1,20 @@
+.env
+.env.*
+!.env.example
+
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfvars
+
+coverage.xml
+htmlcov/
+.DS_Store
+
+# Local backup files
+*.backup
