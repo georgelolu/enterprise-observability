@@ -318,17 +318,19 @@ The error-rate expression measures 5xx responses only. Expected 404 responses ar
 
 ## Grafana Dashboard
 
-The dashboard is named **Enterprise Observability — Product Service** and contains five panels:
+The provisioned dashboard is named **Enterprise Observability - Product Service**
+and contains four panels:
 
 | Panel | What it demonstrates |
 |---|---|
-| HTTP Request Rate | Incoming request activity |
-| HTTP Responses by Status Code | Distribution of observed HTTP responses |
-| p95 Latency | Estimated 95th-percentile request duration from the histogram |
-| HTTP 5xx Error Rate | Percentage of observed requests returning 5xx responses |
-| Product Service Scrape Health | Prometheus target availability |
+| HTTP Requests per Second | Request throughput over time |
+| HTTP 5xx Error Rate (%) | Percentage of requests returning HTTP 5xx responses |
+| HTTP Request Latency (p95) | Estimated 95th-percentile request duration |
+| Request Rate by Endpoint | Request traffic grouped by endpoint |
 
-The Prometheus and Tempo data sources have been configured and their Save & Test checks succeeded.
+The dashboard is provisioned from
+`observability/grafana/dashboards/product-service.json`.
+Prometheus and Tempo are configured as Grafana data sources.
 
 ## Distributed Tracing
 
