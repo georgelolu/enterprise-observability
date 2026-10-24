@@ -452,6 +452,31 @@ This project is intended for local development and demonstration.
 - Use appropriate authentication, TLS, network controls, secret management, and access policies for a production deployment.
 - Establish retention, backup, and access-control policies before storing operational telemetry from real systems.
 
+## DevSecOps CI/CD Security Gates
+
+The GitHub Actions workflow (`.github/workflows/ci.yml`) performs automated quality and security checks on pushes to `main` and pull requests targeting `main`.
+
+### Pipeline checks
+
+1. **Application tests:** Runs the Python test suite using `pytest`.
+2. **Dependency vulnerability scanning:** Uses `pip-audit` to check the application's pinned Python dependencies against known vulnerability advisories. The pipeline fails if the audit command detects vulnerabilities.
+3. **Docker Compose validation:** Validates the Compose configuration before deployment.
+4. **Container image build:** Builds the Product Service Docker image as part of CI.
+5. **Container vulnerability scanning:** Uses Trivy to scan operating-system packages and application libraries for HIGH and CRITICAL vulnerabilities. The pipeline fails when qualifying findings are detected.
+
+### Container security controls
+
+- Applies available operating-system package upgrades during the Docker image build.
+- Runs the Product Service as a non-root user.
+- Uses `--ignore-unfixed: true` in the Trivy workflow configuration to avoid failing on vulnerabilities for which no fix is available.
+- Keeps application dependencies pinned in `app/requirements.txt`.
+
+### Security validation
+
+Security scan results reflect the vulnerability database and package versions available at scan time. A passing pipeline is evidence that the configured checks passed; it is not a guarantee that the application is free of vulnerabilities or production-ready.
+
+Review security findings, update affected dependencies or base-image packages, rebuild the image, and rerun the checks before merging changes.
+
 ## Current Scope and Limitations
 
 Implemented and verified:
@@ -481,7 +506,6 @@ Not yet claimed as implemented:
 - Add alert rules for elevated 5xx rates, latency, and scrape failures.
 - Add structured log collection and trace/log correlation.
 - Introduce load testing with a repeatable workload and documented results.
-- Add CI validation for configuration, application tests, and container builds.
 - Evaluate secure remote access, durable storage, and high availability for a production-oriented deployment.
 
 ## Engineering Skills Demonstrated

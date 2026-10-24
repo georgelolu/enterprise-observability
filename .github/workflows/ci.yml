@@ -1,4 +1,4 @@
-name: Enterprise Observability CI
+name: Enterprise Observability CI and Security
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   test-and-validate:
-    name: Test application and validate Compose
+    name: Test, validate and scan
     runs-on: ubuntu-latest
 
     steps:
@@ -31,7 +31,29 @@ jobs:
       - name: Run application tests
         run: python -m pytest -v tests/
 
+      - name: Audit Python dependencies
+        run: |
+          python -m pip install pip-audit
+          python -m pip_audit -r app/requirements.txt
+
       - name: Validate Docker Compose configuration
         env:
           GRAFANA_ADMIN_PASSWORD: ci-validation-placeholder
         run: docker compose config -q
+
+      - name: Build Product Service image for scanning
+        run: |
+          docker build \
+            --file app/product-service/Dockerfile \
+            --tag enterprise-observability-product-service:ci \
+            .
+
+      - name: Scan container image with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: enterprise-observability-product-service:ci
+          format: table
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'HIGH,CRITICAL'
